@@ -22,7 +22,7 @@
                 android:id="@+id/et_input"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="{0@CQ,0,0,5436}"
+                android:text="8A0101119B"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 

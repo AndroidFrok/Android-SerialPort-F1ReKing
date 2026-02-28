@@ -70,7 +70,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (view.getId() == R.id.btn_send) {
             String str = etInput.getText().toString();
             if (mSerialPortHelper != null) {
-                mSerialPortHelper.sendTxt(str);
+//                mSerialPortHelper.sendTxt(str);
+                mSerialPortHelper.sendHex(str);
             }
         } else if (view.getId() == R.id.btn_open) {
             open();
@@ -79,11 +80,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    @Override
+    protected void onPause() {
+        close();
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        close();
+        super.onDestroy();
+    }
+
     private void open() {
         if (mSerialPortHelper == null) {
             mSerialPortHelper = new SerialPortHelper();
-            mSerialPortHelper.setPort("/dev/ttyS0");
-            mSerialPortHelper.setBaudRate(115200);
+            mSerialPortHelper.setPort("/dev/ttyS4");
+            mSerialPortHelper.setBaudRate(9600);
             mSerialPortHelper.setStopBits(STOPB.getStopBit(STOPB.B1));
             mSerialPortHelper.setDataBits(DATAB.getDataBit(DATAB.CS8));
             mSerialPortHelper.setParity(PARITY.getParity(PARITY.NONE));
@@ -123,12 +136,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mSerialPortHelper.setISerialPortDataListener(new ISerialPortDataListener() {
             @Override
             public void onDataReceived(byte[] bytes) {
-                /*byte[] test = new byte[]{};
+               /* byte[] test = new byte[]{};
                 for (int y = 0; y < 100; y++) {
                     test = mergeByteArrays(test, bytes);
                 }*/
+
+                // 将字节数组转换为十六进制字符串
+                StringBuilder hexSb = new StringBuilder();
+                for (byte b : bytes) {
+                    hexSb.append(String.format("%02X ", b));
+                }
+                String hexStr = hexSb.toString().trim();
+
                 String str = new String(bytes, StandardCharsets.UTF_8);
-                sb.append(System.currentTimeMillis() + "--" + str);
+                sb.append(System.currentTimeMillis() + "--" + hexStr);
                 sb.append("\n");
 
                 runOnUiThread(new Runnable() {
